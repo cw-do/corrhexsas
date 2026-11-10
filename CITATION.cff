@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "Please cite this software version and the associated manuscript when available."
+type: software
+title: corrhexsas
+version: 0.1.0
+date-released: 2026-11-10
+authors:
+  - family-names: Do
+    given-names: Changwoo
+repository-code: 'https://github.com/cw-do/corrhexsas'
+url: 'https://github.com/cw-do/corrhexsas'
+license: MIT
+abstract: 'Hexagonal powder SAS with correlated displacement fields, finite grains, radial SLD profiles, and data-file fitting.'

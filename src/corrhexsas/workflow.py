@@ -68,7 +68,8 @@ def profile_from_config(spec, p, base):
         return TabulatedProfile(table[:, 0], table[:, 1:].T, _resolve(spec.get("medium", table[-1, 1:].tolist()), p)), {}
     if kind == "conserved_solvents":
         options = {k: _resolve(v, p) for k, v in spec.items() if k != "type"}
-        return conserved_solvents(p["a"], [p[k] for k in CHEMICAL_NAMES], **options)
+        positions = [p.get(k, 0.0) if k == "outer_width_position" and options.get("outer_width") is not None else p[k] for k in CHEMICAL_NAMES]
+        return conserved_solvents(p["a"], positions, **options)
     raise ValueError(f"Unknown profile type {kind!r}")
 
 
@@ -132,6 +133,14 @@ class Problem:
         self.specs = cfg.get("profiles", [cfg.get("profile")]*len(self.data))
         if len(self.specs) != len(self.data) or any(s is None for s in self.specs):
             raise ValueError("Supply one profile or one profiles entry per dataset")
+        used = STRUCTURE_NAMES | (profile_references & set(self.parameters))
+        for spec in self.specs:
+            if spec["type"] == "disk":
+                used = used | {"radius_over_a"}
+            elif spec["type"] == "conserved_solvents":
+                used = used | set(CHEMICAL_NAMES[:5] if spec.get("outer_width") is not None else CHEMICAL_NAMES)
+        if set(self.free)-used:
+            raise ValueError(f"Varying unused coordinates is not allowed: {sorted(set(self.free)-used)}")
         for i, spec in enumerate(self.specs):
             if spec["type"] == "tabulated":
                 path = self.base/spec["file"]

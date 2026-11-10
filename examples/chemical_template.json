@@ -1,0 +1,40 @@
+{
+  "datasets": [
+    {"file": "contrast_0.csv", "label": "0%"},
+    {"file": "contrast_3.csv", "label": "3%"},
+    {"file": "contrast_6.csv", "label": "6%"},
+    {"file": "contrast_9.csv", "label": "9%"},
+    {"file": "contrast_12.csv", "label": "12%"},
+    {"file": "contrast_15.csv", "label": "15%"}
+  ],
+  "q_unit": "1/A",
+  "profile": {
+    "type": "conserved_solvents",
+    "oil_sld": [5.84, 5.67, 5.50, 5.35, 5.17, 5.02],
+    "apolar_mean": [3.61, 3.51, 3.41, 3.32, 3.23, 3.14],
+    "outer_width": 10.0
+  },
+  "parameters": {
+    "a": {"value": 140.0, "vary": true, "bounds": [130.0, 150.0]},
+    "water_position": {"value": 0.5, "vary": true, "bounds": [0.0, 1.0]},
+    "core_position": {"value": 0.5, "vary": true, "bounds": [0.0, 1.0]},
+    "oil_position": {"value": 0.5, "vary": true, "bounds": [0.0, 1.0]},
+    "outer_position": {"value": 0.5, "vary": true, "bounds": [0.0, 1.0]},
+    "inner_width_position": {"value": 0.8, "vary": true, "bounds": [0.0, 1.0]},
+    "sigma_over_a": {"value": 0.04, "vary": true, "bounds": [0.02, 0.08]},
+    "ell_b_over_a": {"value": 0.3, "vary": true, "bounds": [0.1, 1.0], "log": true},
+    "ell_z_over_a": {"value": 1.2},
+    "grain_radius_over_a": {"value": 80.0},
+    "grain_length_over_a": {"value": 10.0}
+  },
+  "numerics": {
+    "ns": 320, "nz": 160, "s_max": 2000.0, "z_max": 2000.0,
+    "max_shell": 28, "route": "direct", "cache_mb": 256.0,
+    "allow_truncated_support": true
+  },
+  "linear": {"scale_bounds": [0.02, 30.0], "background_bounds": [0.4, 1.0]},
+  "fit": {
+    "objective": "balanced", "region_edges": [0.040, 0.075, 0.098, 0.120],
+    "normalize_to_initial": true, "max_nfev": 250, "starts": 3, "seed": 20261110
+  }
+}
