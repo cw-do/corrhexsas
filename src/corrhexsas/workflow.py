@@ -173,10 +173,13 @@ class Problem:
 
     def raw(self, p, *, part="total"):
         structure = structure_from_parameters(p, self.config)
-        curves, info = [], []
+        curves, info, shared = [], [], {}
         for i, (spec, engine) in enumerate(zip(self.specs, self.engines)):
-            profile, decoded = profile_from_config(spec, p, self.base)
-            result = engine.evaluate(structure, profile, part=part)
+            key = (id(engine), json.dumps(spec, sort_keys=True))
+            if key not in shared:
+                profile, decoded = profile_from_config(spec, p, self.base)
+                shared[key] = (engine.evaluate(structure, profile, part=part), decoded)
+            result, decoded = shared[key]
             if len(result) not in (1, len(self.data)):
                 raise ValueError("A multi-contrast profile must provide one SLD per dataset")
             curves.append(result[0 if len(result) == 1 else i])
@@ -279,9 +282,12 @@ def write_run(problem, result, prediction, output, *, kind="fit"):
                    delimiter=",", header="q_Ainv,I_cm_inv,dI_cm_inv,sigma_q_Ainv,calculated_cm_inv,standardized_residual", comments="")
     provenance = dict(created_utc=datetime.now(timezone.utc).isoformat(), version=__version__,
                       environment=dict(python=platform.python_version(), numpy=np.__version__, scipy=scipy.__version__),
-                      inputs=problem.inputs, outputs={p.name: sha256(p) for p in out.iterdir() if p.is_file()})
+                      inputs=problem.inputs, outputs={p.name: sha256(p) for p in out.iterdir() if p.is_file()},
+                      code_sha256={p.name: sha256(p) for p in Path(__file__).parent.glob("*.py")})
     try:
         repo = Path(__file__).resolve().parents[2]
+        if not (repo/".git").exists() or Path(__file__).parent.parent.name != "src":
+            raise OSError("Installed wheel is not a source checkout")
         provenance["git_commit"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True, stderr=subprocess.DEVNULL).strip()
         provenance["git_dirty"] = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=repo, text=True, stderr=subprocess.DEVNULL).strip())
     except (OSError, subprocess.CalledProcessError):
