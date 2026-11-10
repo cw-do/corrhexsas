@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "corrhexsas"
+version = "0.1.0"
+description = "Correlated-displacement and finite-grain hexagonal small-angle scattering"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [{name = "Changwoo Do"}]
+dependencies = ["numpy>=1.24", "scipy>=1.10", "threadpoolctl>=3"]
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.7"]
+dev = ["pytest>=7", "build>=1"]
+
+[project.scripts]
+corrhexsas = "corrhexsas.cli:main"
+
+[project.urls]
+Repository = "https://github.com/cw-do/corrhexsas"
+Documentation = "https://github.com/cw-do/corrhexsas#readme"
+Issues = "https://github.com/cw-do/corrhexsas/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
